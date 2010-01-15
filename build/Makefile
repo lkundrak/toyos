@@ -25,19 +25,18 @@ OBJS	= ../dev/kbd.o ../dev/vga.o ../dev/pit.o ../dev/pic.o \
 # targets
 
 build: $(IMAGE)
-	@echo Build complete.	
+	@echo Build complete.
 
 install: build
 	cp $(IMAGE) /tftpboot
 
 snapshot.tar: clean
 	cd ..; tar -cvf build/snapshot.tar *;
-	
+
 snapshot: snapshot.tar
 	mount /dev/fd0a;
 	cp snapshot.tar /floppy
 	umount /dev/fd0a;
-	
 
 $(IMAGE): $(OBJS)
 	$(LD) $(LDFLAGS) -o $(IMAGE)  $(OBJS)
