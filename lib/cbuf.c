@@ -3,7 +3,7 @@ static char rcsid[]="$Id: cbuf.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
 /*
  * Character buffers system
  */
- 
+
 #include <param.h>
 #include <types.h>
 
@@ -14,7 +14,7 @@ struct cbucket {
 
 struct cbucket cpool[CBUFS];
 struct cbucket *cfreelist;
- 
+
 cfree (buck)
 	struct cbucket *buck;
 {
@@ -25,7 +25,7 @@ cfree (buck)
 cinit ()
 {
 	int i = CBUFS;
-	
+
 	while (i)
 		cfree (cpool[--i]);
 }

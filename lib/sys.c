@@ -1,16 +1,6 @@
-static char rcsid[]="$Id: sys.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
+#include <lib.h>
 
-/*
- * I got me some bad news for you, Sunshine.
- */
-
-panic (reason)
-	char *reason;
-{
-	printf ("Panic: %s,\n", reason);
-	halt ();
-}
-
+void
 halt ()
 {
 	printf ("Kernel has halted.\n");
@@ -18,4 +8,16 @@ halt ()
 	cli ();
 	while (inb (0x60) != 1);
 	reboot ();
+}
+
+/*
+ * I got me some bad news for you, Sunshine.
+ */
+
+void
+panic (reason)
+	char *reason;
+{
+	printf ("Panic: %s,\n", reason);
+	halt ();
 }

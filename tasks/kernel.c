@@ -1,10 +1,11 @@
-static char rcsid[]="$Id: main.c,v 1.3 2004/11/21 17:35:21 lkundrak Exp $";
+#include <lib.h>
 
 /*
  * first running task
  * will run driver tasks and init, creator of all user tasks
  */
 
+void
 kernel_task ()
 {
 	sti ();		/* enabling interrupts. task can be preempted */

@@ -12,7 +12,7 @@ extern cpool[];
 main ()
 {
 	int i = 0;
-	
+
 	cinit ();
 	dumpfree ();
 	while (cput(i++, &chars));

@@ -10,7 +10,7 @@ static char rcsid[]="$Id: cbuf.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
  * linked in cfreelist list. If needed, cput () picks
  * new buffer and cget () returns one if possible.
  */
- 
+
 #include "../include/param.h"
 #include "../include/types.h"
 
@@ -40,7 +40,7 @@ cget (cb)
 {
 	char c;
 	struct cbucket *buck;
-	
+
 	if (cb->c_count-- == 0)
 		return -1;
 	buck = &cpool[cbuckno(cb->c_first)];
@@ -53,7 +53,7 @@ cget (cb)
 			cb->c_first = cb->c_last = 0;
 		cfree (buck);
 	}
-	
+
 	return c;
 }
 
@@ -70,10 +70,10 @@ cput (c, cb)
 		else
 			return 0;
 		printf ("got new bucket at 0x%x\n", buck);
-	} 
+	}
 
 
-	if (cb->c_count++ == 0) 
+	if (cb->c_count++ == 0)
 		cb->c_first = cb->c_last;
 
 	*(cb->c_last) = c;
@@ -92,13 +92,13 @@ cput (c, cb)
 cinit ()
 {
 	int i = CBUFS;
-	
+
 	while (i)
 		cfree (&cpool[--i]);
 }
 
 /* following is only called internally within this file */
- 
+
 /*
  * Put bucket into list of free ones
  */
@@ -118,7 +118,7 @@ struct cbucket
 *cpick ()
 {
 	struct cbucket *retval;
-	
+
 	printf ("cfreelist = 0x%x\n", cfreelist);
 	dumpfree ();
 	if (!cfreelist)
@@ -127,7 +127,7 @@ struct cbucket
 	cfreelist = cfreelist->c_next;
 	dumpfree ();
 	printf ("cfreelist = 0x%x\n\n", cfreelist);
-	
+
 
 	return retval;
 }

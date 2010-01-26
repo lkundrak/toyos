@@ -11,7 +11,7 @@ printk (format, args)
 {
 	int *argp;
 	char c;
-	
+
 	argp = &args;
 	while (c = *format++)
 		if (c == '%')
@@ -24,7 +24,7 @@ printk (format, args)
 				case 's': puts (*argp++); break;
 				case 'c': putchar (*argp++); break;
 				case '%': putchar ('%'); break;
-				case '\0': return;				
+				case '\0': return;
 			}
 		else
 			putchar (c);

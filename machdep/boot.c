@@ -1,8 +1,6 @@
-static char rcsid[]="$Id: boot.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
-
 /*
  * Multiboot header
- * unix.x: .multiboot_header is at the beginning of the core (1MB)
+ * link.x: .multiboot_header is at the beginning of the core (1MB)
  */
 
 #define MBF_NONE	0x00000000

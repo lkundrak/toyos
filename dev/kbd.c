@@ -1,5 +1,3 @@
-static char rcsid[]="$Id: kbd.c,v 1.3 2004/11/21 19:22:44 lkundrak Exp $";
-
 /*
  * Routines handling PC terminal's keyboard
  */
@@ -7,6 +5,7 @@ static char rcsid[]="$Id: kbd.c,v 1.3 2004/11/21 19:22:44 lkundrak Exp $";
 /* todo: cursor keys,.... ansi escapes? */
 
 #include <ia32.h>
+#include <lib.h>
 
 #define	IRQ		1
 
@@ -41,8 +40,6 @@ static char rcsid[]="$Id: kbd.c,v 1.3 2004/11/21 19:22:44 lkundrak Exp $";
 #define RIGHT		1
 #define INS		1
 #define DEL		1
-
-
 
 char	ctrl, alt, shift, altgr, caps, num, scroll;
 
@@ -90,12 +87,27 @@ char	convntab[K_BREAK] = {	/* numeric keypad with numlock pressed */
 		'2',	'3',	'0',	'.'
 	};
 
+void
+kbready ()
+{
+	while (inb (KBD_STAT) & 0x2);	/* beware busy waiting! */
+}
 
+void
+kbleds ()
+{
+	kbready ();
+	outb (KBD_DATA, 0xed);
+	kbready ();
+	outb (KBD_DATA, (scroll ? 1 : 0) | (num ? 2 : 0) | (caps ? 4 : 0));
+}
+
+int
 kbconv (sc)
 {
 	if (sc>K_BREAK)
 		return 0;
-	
+
 	if (caps && convctab[sc] && !shift)
 		return convctab[sc];
 
@@ -114,14 +126,24 @@ kbconv (sc)
 	return convtab[sc];
 }
 
+void
+reboot ()
+{
+	printf ("Rebooting...");
+	kbready ();
+	while (1)
+		outb(KBD_CMD, 0xFE);
+	/* anything smarter than trying forever in case of fault? */
+}
 
+void
 kbintr ()
 {
-	register code;
+	int code;
 	char gray = 0;
 
 	code = inb (KBD_DATA);
-	if (code == K_GRAY) {	
+	if (code == K_GRAY) {
 		gray = 1;
 		do {			/* polling... just a "quick hack" */
 			code = inb (0x60);
@@ -152,31 +174,10 @@ kbintr ()
 		putchar (kbconv (code));
 }
 
-kbleds ()
-{
-	kbready ();
-	outb (KBD_DATA, 0xed);
-	kbready ();
-	outb (KBD_DATA, (scroll ? 1 : 0) | (num ? 2 : 0) | (caps ? 4 : 0));
-}
-
-kbready ()
-{
-	while (inb (KBD_STAT) & 0x2);	/* beware busy waiting! */
-}
-
+void
 kbstart ()
 {
 	printf ("Keyboard and keyboard controller driver\n");
 	kbleds ();
 	register_irq (IRQ, kbintr);
-}
-
-reboot ()
-{
-	printf ("Rebooting...");
-	kbready ();
-	while (1)
-		outb(KBD_CMD, 0xFE);
-	/* anything smarter than trying forever in case of fault? */
 }

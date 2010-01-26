@@ -1,10 +1,9 @@
-static char rcsid[]="$Id: vga.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
-
 /*
  * Routines handling PC terminal's screen
  */
 
 #include <ia32.h>
+#include <lib.h>
 
 #define	COLS		80
 #define ROWS		25
@@ -22,20 +21,65 @@ struct vgachar {
 
 char vgacols = 0, vgarows = 0;
 
+void
+vgascroll ()
+{
+	int i;
+
+	for (i=80; i<COLS*ROWS; i++)
+		vgaframe[i-80].character = vgaframe[i].character;
+	for (; i<COLS*(ROWS+1); i++)
+		vgaframe[i-80].character = 0;
+
+	vgarows--;
+}
+
+/*
+ * move hardware cursor to specified position
+ */
+
+void
+vgacursor ()
+{
+	outb (VGA_IDX, 0x0f);
+	outb (VGA_VAL, CURSOR & 0xff);
+	outb (VGA_IDX, 0x0e);
+	outb (VGA_VAL, CURSOR >> 8 & 0xff);
+}
+
+/*
+ * clear the screen and put cursor in upper left corner
+ */
+
+void
+vgaclear ()
+{
+	int i;
+
+	for (i=0; i<COLS*ROWS; i++){
+		vgaframe[i].character = 0;
+		vgaframe[i].attr = 0x02;
+	}
+
+	vgacols = 0;
+	vgarows = 0;
+	vgacursor ();
+}
 
 /*
  * write single character on the screen,
  * move cursor and scroll if necessary
  * todo: \t, backspace,... ansi escapes?
  */
- 
+
+void
 vgaputchar (c)
 	char c;
 {
-	int if_save;
-	if (if_save = eflags () & IF)
+	int if_save = eflags () & IF;
+	if (if_save)
 		cli ();
-	
+
 	switch (c) {
 		case '\n':
 			vgarows++;
@@ -72,53 +116,13 @@ vgaputchar (c)
 		sti ();
 }
 
-vgascroll ()
-{
-	int i;
-
-	for (i=80; i<COLS*ROWS; i++)
-		vgaframe[i-80].character = vgaframe[i].character;
-	for (; i<COLS*(ROWS+1); i++)
-		vgaframe[i-80].character = 0;
-
-	vgarows--;
-}
-
-/*
- * clear the screen and put cursor in upper left corner
- */
- 
-vgaclear ()
-{
-	int i;
-	
-	for (i=0; i<COLS*ROWS; i++){
-		vgaframe[i].character = 0;
-		vgaframe[i].attr = 0x02;
-	}
-
-	vgacols = 0;
-	vgarows = 0;	
-	vgacursor ();
-}
-
-/*
- * move hardware cursor to specified position
- */
-
-vgacursor ()
-{
-	outb (VGA_IDX, 0x0f);
-	outb (VGA_VAL, CURSOR & 0xff);
-	outb (VGA_IDX, 0x0e);
-	outb (VGA_VAL, CURSOR >> 8 & 0xff);
-}
-
 /*
  * wrapper used by printf ()
- */	
+ */
 
+void
 putchar (c)
+	char c;
 {
 	vgaputchar (c);
 }

@@ -1,4 +1,4 @@
-static char rcsid[]="$Id: pic.c,v 1.5 2004/12/05 15:01:42 lkundrak Exp $";
+#include <lib.h>
 
 #define	PIC1_PORT1	0x20
 #define	PIC1_PORT2	0x21
@@ -11,12 +11,14 @@ static char rcsid[]="$Id: pic.c,v 1.5 2004/12/05 15:01:42 lkundrak Exp $";
 
 int irq_mask;
 
+void
 picmask ()
 {
 	outb (PIC1_PORT2, ~irq_mask & 0xff);		/* OCW1: irq mask */
 	outb (PIC2_PORT2, (~irq_mask >> 8) & 0xff);	/* OCW1: irq mask */
 }
 
+void
 picstart ()
 {
 	/*
@@ -37,6 +39,6 @@ picstart ()
 	outb (PIC2_PORT2, 0x02);	/* ICW3: I am at master's IRQ 2 */
 	outb (PIC2_PORT2, 0x01);	/* ICW4: 80x86 mode */
 	irq_mask = (0x1 << 2);		/* enabling cascade */
-	
+
 	picmask ();
 }

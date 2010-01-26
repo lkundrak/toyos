@@ -1,4 +1,4 @@
-static char rcsid[]="$Id: trap.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
+#include <lib.h>
 
 char *traps[]= {
 	/* 0 */ "division by zero",
@@ -26,10 +26,10 @@ trap (trapno, errcode, eip, cs, eflags)
 
 {
 	switch(trapno) {
-		case 128: 
+		case 128:
 			printf ("[SYSCALL]");
 			break;
-	
+
 		case 8:
 		case 10:
 		case 11:
@@ -50,6 +50,7 @@ trap (trapno, errcode, eip, cs, eflags)
 
 int *i;
 
+void
 stkdump (esp)
 	int *esp;
 {
@@ -62,9 +63,8 @@ stkdump (esp)
 	} while (i++ < esp+5);
 }
 
-
+void
 trap (stack)
 {
 	panic ("trap");
 }
-

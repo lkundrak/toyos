@@ -84,11 +84,11 @@ irq	0
 irq	1
 irq	2
 irq	3
-irq	4	
+irq	4
 irq	5
-irq	6	
-irq	7	
-irq	8	
+irq	6
+irq	7
+irq	8
 irq	9
 irq	10
 irq	11

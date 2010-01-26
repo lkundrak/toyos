@@ -56,7 +56,7 @@ inw:
 	in	%dx, %ax
 	ret
 
- 
+
 /*
  * outl (port, int);
  * int inl (port);
@@ -77,7 +77,7 @@ inl:
  * load_gdt (tbl);
  *	struct region *tbl;
  */
- 
+
 .globl	load_idt, load_gdt
 load_idt:
 	mov	0x4(%esp), %eax
@@ -100,7 +100,7 @@ load_gdt:
  * int cpuid (buf);
  *	char buf[13];
  */
- 
+
 .globl	cpuid
 cpuid:
 	xor	%eax, %eax
@@ -113,18 +113,18 @@ cpuid:
 	movb	$0, 0xc(%eax)
 	pop	%eax
 	ret
-	
+
 /*
  * save (buf)
  * restore (buf)
  *	struct regs buf;
  */
- 
+
 .globl	save, resume
 save:
 	pushf
 	push	%ebx
-	
+
 	mov	0x0c(%esp), %ebx	/* arg1: where to save */
 	mov	%edi, 0x00(%ebx)
 	mov	%esi, 0x04(%ebx)
@@ -132,10 +132,10 @@ save:
 	mov	%edx, 0x14(%ebx)
 	mov	%ecx, 0x18(%ebx)
 	mov	%eax, 0x1c(%ebx)
-	
+
 	pop	%eax			/* ebx */
 	mov	%eax, 0x10(%ebx)
-	
+
 	pop	%eax			/* eflags */
 	mov	%eax, 0x24(%ebx)
 
@@ -157,7 +157,7 @@ resume:
 	mov	0x14(%ebx), %edx
 	mov	0x18(%ebx), %ecx
 	push	0x24(%ebx)		/* eflags */
-	popf			
+	popf
 	push	0x20(%ebx)		/* eip */
 	mov	0x10(%ebx), %ebx
 	mov	$1, %eax

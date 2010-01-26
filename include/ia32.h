@@ -34,7 +34,7 @@ struct segment
 } __attribute__ ((packed));
 
 struct region				/* used by lidt and gidt */
-{			
+{
 	unsigned r_limit:16;
 	unsigned r_base:32;
 } __attribute__ ((packed));

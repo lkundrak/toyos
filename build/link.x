@@ -12,7 +12,7 @@ SECTIONS
 	/*
 	 * Multiboot header
 	 * Required to be aligned at 4KB boundary.
-	 */ 
+	 */
 
 	. = ALIGN(4);	/* no reason for having this here, 1MB is at 4KB b. */
 	.multiboot_header :
@@ -24,17 +24,17 @@ SECTIONS
 	{
 		*(.text)
 	}
-	
+
 	.data :
 	{
 		*(.data)
 	}
-	
-	/* 
+
+	/*
 	 * symbols bss_start and bss_end are required when blankning bss
 	 * in machdep.c
 	 */
-	
+
 	bss_start = .;
 	.bss :
 	{

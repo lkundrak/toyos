@@ -1,14 +1,15 @@
-static char rcsid[]="$Id: irq.c,v 1.1 2004/12/05 15:01:44 lkundrak Exp $";
+#include <lib.h>
 
 extern int irq_mask;
 
 struct {
-	int (*func) ();
+	void (*func) ();
 	int *data;
 } irq_handlers[16];
 
+void
 register_irq (irq, func)
-	int (*func) ();
+	void (*func) ();
 {
 	irq_handlers[irq].func = func;
 	irq_mask |= (0x1 << irq);
@@ -16,7 +17,8 @@ register_irq (irq, func)
 	picmask ();
 }
 
-int hw_irq (irq)
+void
+hw_irq (irq)
 {
 	if (irq_handlers[irq].func)
 		(*irq_handlers[irq].func) (irq);

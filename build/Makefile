@@ -1,15 +1,11 @@
-
-# $Id: makefile,v 1.4 2004/12/05 15:01:39 lkundrak Exp $
-
-##### needs GNU make!
-# adjusted for pmake.
-
 CC	= gcc
 GCC	= gcc
 
-CFLAGS	= -I../include
-LDFLAGS	= -Tlink.x
-IMAGE	= windows95
+CFLAGS ?= -Wall
+override CFLAGS += -I../include -ffreestanding
+override LDFLAGS = -Tlink.x
+
+IMAGE	= kernel
 
 OBJS	= ../dev/kbd.o ../dev/vga.o ../dev/pit.o ../dev/pic.o \
 	../lib/prf.o ../lib/main.o ../lib/sys.o\
@@ -17,15 +13,9 @@ OBJS	= ../dev/kbd.o ../dev/vga.o ../dev/pit.o ../dev/pic.o \
 	../machdep/trap.o ../dev/nic.o ../dev/pci.o \
 	../tasks/kernel.o ../lib/irq.o
 
-.SUFFIXES: .o .c .s
-.c.o .s.o: .SILENT
-	echo Compiling $<
-	$(CC) $(CFLAGS) -c $< -o $@
-
 # targets
 
 build: $(IMAGE)
-	@echo Build complete.
 
 install: build
 	cp $(IMAGE) /tftpboot

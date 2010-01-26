@@ -1,8 +1,9 @@
-static char rcsid[]="$Id: pci.c,v 1.3 2004/12/05 16:35:10 lkundrak Exp $";
+#include <lib.h>
 
 #define	PCI_ADDR	0xcf8
 #define	PCI_DATA	0xcfc
 
+int
 pcireadl (bus, dev, func, off)
 {
 	outl (PCI_ADDR,
@@ -15,13 +16,13 @@ pcireadl (bus, dev, func, off)
 	return (inl (PCI_DATA));
 }
 
-
+void
 pciinit ()
 {
 	int bus, dev;	/* bus, device */
 
 	printf ("Scanning PCI bus...\n");
-	
+
 	for (bus = 0; bus < 0xff; bus++)
 		for (dev = 0; dev < 0x20; dev++){
 			int dev_vend;

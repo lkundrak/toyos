@@ -1,12 +1,11 @@
-static char rcsid[]="$Id: startup.c,v 1.1.1.1 2004/11/21 17:01:59 lkundrak Exp $";
-
 #include <ia32.h>
+#include <lib.h>
 
 extern int bss_start, bss_end;	/* todo: put in .h file. seg.h? */
 struct gate idt[256];
 struct segment gdt[3];
 
-extern	trap0 (),
+extern void trap0 (),
 	trap1 (),
 	trap2 (),
 	trap3 (),
@@ -25,31 +24,65 @@ extern	trap0 (),
 	trap16 (),
 	trap17 (),
 	trap18 ();
-extern	irq0 (),
-	irq1 ();
-	irq2 ();
-	irq3 ();
-	irq4 ();
-	irq5 ();
-	irq6 ();
-	irq7 ();
-	irq8 ();
-	irq9 ();
-	irq10 ();
-	irq11 ();
-	irq12 ();
-	irq13 ();
-	irq14 ();
+extern void irq0 (),
+	irq1 (),
+	irq2 (),
+	irq3 (),
+	irq4 (),
+	irq5 (),
+	irq6 (),
+	irq7 (),
+	irq8 (),
+	irq9 (),
+	irq10 (),
+	irq11 (),
+	irq12 (),
+	irq13 (),
+	irq14 (),
 	irq15 ();
-extern	trap128 ();
+extern void trap128 ();
+
+/*
+ * misc.
+ */
+
+void
+setsegment (segment, base, limit, type, dpl, b32, pagegran)
+	struct segment *segment;
+{
+	segment->s_limit_lo	= limit & 0xffff;
+	segment->s_base_lo	= base & 0xffffff;
+	segment->s_type		= type & 0x1f;
+	segment->s_dpl		= dpl & 0x3;
+	segment->s_present	= 1;
+	segment->s_limit_hi	= (limit >> 16) & 0xf;
+	segment->s_xx		= 0;
+	segment->s_b32		= b32 & 0x1;
+	segment->s_pagegran	= pagegran & 0x1;
+	segment->s_base_hi	= (base >> 24) & 0xff;
+}
+
+void
+setgate (gate, offset, selector, type, dpl)
+	struct gate *gate;
+{
+	gate->g_offset_lo	= offset & 0xffff;
+	gate->g_selector	= selector & 0xffff;
+	gate->g_xx		= 0;
+	gate->g_type		= type & 0x1f;
+	gate->g_dpl		= dpl & 0x3;
+	gate->g_present		= 1;
+	gate->g_offset_hi	= (offset >> 16) & 0xffff;
+}
 
 /*
  * Machine-dependent startup code
  */
 
+void
 startup()
 {
-	register *i;
+	int *i;
 	struct region r;
 
 	/*
@@ -125,37 +158,4 @@ startup()
 	r.r_limit = 0x7ff;
 
 	load_idt (&r);
-}
-
-
-
-/*
- * misc.
- */
-
-setsegment (segment, base, limit, type, dpl, b32, pagegran)
-	struct segment *segment;
-{
-	segment->s_limit_lo	= limit & 0xffff;
-	segment->s_base_lo	= base & 0xffffff;
-	segment->s_type		= type & 0x1f;
-	segment->s_dpl		= dpl & 0x3;
-	segment->s_present	= 1;
-	segment->s_limit_hi	= (limit >> 16) & 0xf;
-	segment->s_xx		= 0;
-	segment->s_b32		= b32 & 0x1;
-	segment->s_pagegran	= pagegran & 0x1;
-	segment->s_base_hi	= (base >> 24) & 0xff;
-}
-
-setgate (gate, offset, selector, type, dpl)
-	struct gate *gate;
-{
-	gate->g_offset_lo	= offset & 0xffff;
-	gate->g_selector	= selector & 0xffff;
-	gate->g_xx		= 0;
-	gate->g_type		= type & 0x1f;
-	gate->g_dpl		= dpl & 0x3;
-	gate->g_present		= 1;
-	gate->g_offset_hi	= (offset >> 16) & 0xffff;
 }
