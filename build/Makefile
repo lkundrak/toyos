@@ -1,10 +1,14 @@
 CC	= gcc
 GCC	= gcc
 
-CFLAGS ?= -Wall
+CFLAGS ?= -Wall -g
 INCLUDES = -I../include
 override CFLAGS += $(INCLUDES) -ffreestanding
 override LDFLAGS = -Tlink.x
+
+QEMUFLAGS = -M pc
+override QEMUFLAGS += -net nic,model=ne2k_pci -net user,tftp=.
+override QEMUFLAGS += -fda grub.ok
 
 IMAGE	= kernel
 
@@ -29,7 +33,11 @@ clean:
 	rm -f snapshot.tar
 
 run: $(IMAGE)
-	qemu -net nic,model=ne2k_pci -net user,tftp=. -fda grub.ok
+	qemu $(QEMUFLAGS)
+
+gdb: $(IMAGE)
+	gdb -ex 'symbol-file $(IMAGE)' \
+		-ex 'target remote |exec qemu -gdb stdio $(QEMUFLAGS)'
 
 depend:
 	makedepend $(INCLUDES) ../*/*.c
