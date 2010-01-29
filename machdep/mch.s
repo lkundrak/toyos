@@ -156,12 +156,12 @@ resume:
 	mov	0x08(%ebx), %ebp
 	mov	0x14(%ebx), %edx
 	mov	0x18(%ebx), %ecx
+	mov	0x1c(%ebx), %eax
 	push	0x24(%ebx)		/* eflags */
-	popf
+	push	%cs
 	push	0x20(%ebx)		/* eip */
 	mov	0x10(%ebx), %ebx
-	mov	$1, %eax
-	ret
+	iret
 
 .globl eflags
 eflags:
